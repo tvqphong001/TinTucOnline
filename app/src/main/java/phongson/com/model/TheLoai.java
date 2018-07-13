@@ -1,15 +1,16 @@
 package phongson.com.model;
 
 public class TheLoai {
-    String id,ten,linkTheloai;
+    String id,ten,linkTheloai,nguonbao;
 
-    public TheLoai(String id, String ten, String linkTheloai) {
+    public TheLoai() {
+    }
+
+    public TheLoai(String id, String ten, String linkTheloai, String nguonbao) {
         this.id = id;
         this.ten = ten;
         this.linkTheloai = linkTheloai;
-    }
-
-    public TheLoai() {
+        this.nguonbao = nguonbao;
     }
 
     public String getId() {
@@ -34,5 +35,13 @@ public class TheLoai {
 
     public void setLinkTheloai(String linkTheloai) {
         this.linkTheloai = linkTheloai;
+    }
+
+    public String getNguonbao() {
+        return nguonbao;
+    }
+
+    public void setNguonbao(String nguonbao) {
+        this.nguonbao = nguonbao;
     }
 }

@@ -14,6 +14,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -28,8 +32,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import phongson.com.R;
+import phongson.com.activity.MainActivity;
 import phongson.com.activity.TinActivity;
 import phongson.com.adapter.TinTucAdapter;
+import phongson.com.model.TheLoai;
 import phongson.com.model.TinTuc;
 import phongson.com.util.XMLDOMParser;
 
@@ -37,6 +43,7 @@ public class fm_TrangChu extends Fragment {
     ArrayList<TinTuc> list;
     ListView listView;
     TinTucAdapter adapter;
+    ArrayList<TheLoai> listTheLoai;
     @Nullable
     @Override
 
@@ -47,28 +54,88 @@ public class fm_TrangChu extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setdata(view);
+        list = new ArrayList<>();
+        listTheLoai = new ArrayList<>();
+        listView = view.findViewById(R.id.listview);
+        // lay du lieu tu firebase ve
+        getdataTheloai();
+
+        // chờ fire 3000ms= 3s để listTheLoai lay về nếu không sẽ null
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // gang dữ liệu cho list view và setAdapter
+                setdata();
+            }
+        },1000);
+
+        // Chon moi item trong list view sẽ lấy đường link tương ứng
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), TinActivity.class);
-                //intent.putExtra("link",listtin.get(position).getLink());
+                // lấy đối tượng TinTuc trong list ngay position(Vị Trí) mà mình nhấn vào
                 intent.putExtra("link",list.get(position).getLink());
                 startActivity(intent);
             }
         });
     }
 
-    private void setdata(View view) {
+    private void getdataTheloai() {
+        MainActivity.mDatabase.child("TheLoai").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                TheLoai theLoai = dataSnapshot.getValue(TheLoai.class);
+                // so sánh Ten the loại có giống như fragment đang mở hay không
+                if ("Trang Chủ".equals(theLoai.getTen()))
+                {
+                    listTheLoai.add(theLoai);
+                }
 
-        list = new ArrayList<>();
-        listView = view.findViewById(R.id.listview);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    private void setdata() {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                new ReadDataThanhNien().execute("https://thanhnien.vn/rss/home.rss");
-                new ReadDataVietNamNet().execute("http://vietnamnet.vn/rss/home.rss");
-                new ReadDataVNEpress().execute("https://vnexpress.net/rss/tin-moi-nhat.rss");
+                for (int i = 0;i<listTheLoai.size();i++)
+                {
+                    if (listTheLoai.get(i).getNguonbao().equals("VnExpress"))
+                    {
+                        new ReadDataVNEpress().execute(listTheLoai.get(i).getLinkTheloai());
+                    }
+                    if (listTheLoai.get(i).getNguonbao().equals("Thanh Niên"))
+                    {
+                        new ReadDataThanhNien().execute(listTheLoai.get(i).getLinkTheloai());
+                    }
+                    if (listTheLoai.get(i).getNguonbao().equals("VietNamNet"))
+                    {
+                        new ReadDataVietNamNet().execute(listTheLoai.get(i).getLinkTheloai());
+                    }
+                }
             }
         });
 //        new Handler().postDelayed(new Runnable() {
@@ -77,12 +144,6 @@ public class fm_TrangChu extends Fragment {
 //
 //            }
 //        },3000);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-        });
     }
 
     class ReadDataThanhNien extends AsyncTask<String, Integer, String> {
@@ -136,7 +197,6 @@ public class fm_TrangChu extends Fragment {
             }
             listView.setAdapter(adapter);
             adapter = new TinTucAdapter(getActivity(),R.layout.item_list_tintucc,list);
-            Toast.makeText(getActivity(), String.valueOf(list.size()), Toast.LENGTH_SHORT).show();
             super.onPostExecute(s);
 
         }
@@ -212,7 +272,6 @@ public class fm_TrangChu extends Fragment {
                 list.add(tinTuc);
                 listView.setAdapter(adapter);
                 adapter = new TinTucAdapter(getActivity(),R.layout.item_list_tintucc,list);
-                Toast.makeText(getActivity(), String.valueOf(list.size()), Toast.LENGTH_SHORT).show();
 //                listtin.add(docBao);
 
             }
@@ -269,7 +328,6 @@ public class fm_TrangChu extends Fragment {
             }
             listView.setAdapter(adapter);
             adapter = new TinTucAdapter(getActivity(),R.layout.item_list_tintucc,list);
-            Toast.makeText(getActivity(), String.valueOf(list.size()), Toast.LENGTH_SHORT).show();
             super.onPostExecute(s);
 
         }

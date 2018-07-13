@@ -46,7 +46,11 @@ public class TinTucAdapter extends ArrayAdapter<TinTuc> {
 
         if(tinTuc!=null) {
             textView.setText(tinTuc.getTieude());
-            Picasso.get().load(tinTuc.getLink_hinh()).into(imageView);
+            if (tinTuc.getLink_hinh()!="")
+            {
+                Picasso.get().load(tinTuc.getLink_hinh()).into(imageView);
+            }
+
             NguonBao.setText(tinTuc.getNgonbao());
             NgayDang.setText(tinTuc.getNgaydang());
         }

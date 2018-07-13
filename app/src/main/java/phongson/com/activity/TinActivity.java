@@ -52,20 +52,26 @@ public class TinActivity extends AppCompatActivity {
         webView = findViewById(R.id.webview_tintuc);
 
         // open javaScript to watch video
-        webView.getSettings().setJavaScriptEnabled(true);
-        // webView.getSettings().setPluginState(WebSettings.PluginState.ON);
-        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        webView.getSettings().setSupportMultipleWindows(true);
-        webView.getSettings().setSupportZoom(true);
-        //webView.getSettings().setBuiltInZoomControls(true);
-        webView.getSettings().setAllowFileAccess(true);
+       settingWebView(true);
 
         webView.loadUrl(link);
     }
+
+    private void settingWebView(boolean trangthai) {
+        webView.getSettings().setJavaScriptEnabled(trangthai);
+        // webView.getSettings().setPluginState(WebSettings.PluginState.ON);
+        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(trangthai);
+        webView.getSettings().setSupportMultipleWindows(trangthai);
+        webView.getSettings().setSupportZoom(trangthai);
+        webView.getSettings().setBuiltInZoomControls(trangthai);
+        webView.getSettings().setAllowFileAccess(trangthai);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                settingWebView(false);
                 finish();
                 return true;
             default:

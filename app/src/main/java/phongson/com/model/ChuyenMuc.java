@@ -3,12 +3,12 @@ package phongson.com.model;
 public class ChuyenMuc {
     String idUser,tenchuyenmuc;
 
-    public ChuyenMuc() {
-    }
+    int seleted;
 
-    public ChuyenMuc(String idUser, String tenchuyenmuc) {
+    public ChuyenMuc(String idUser, String tenchuyenmuc, int seleted) {
         this.idUser = idUser;
         this.tenchuyenmuc = tenchuyenmuc;
+        this.seleted = seleted;
     }
 
     public String getIdUser() {
@@ -25,5 +25,13 @@ public class ChuyenMuc {
 
     public void setTenchuyenmuc(String tenchuyenmuc) {
         this.tenchuyenmuc = tenchuyenmuc;
+    }
+
+    public int getSeleted() {
+        return seleted;
+    }
+
+    public void setSeleted(int seleted) {
+        this.seleted = seleted;
     }
 }
