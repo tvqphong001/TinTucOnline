@@ -136,6 +136,10 @@ public class fm_TrangChu extends Fragment {
                     {
                         new ReadDataVietNamNet().execute(listTheLoai.get(i).getLinkTheloai());
                     }
+                    if (listTheLoai.get(i).getNguonbao().equals("Tuổi Trẻ"))
+                    {
+                        new ReadDataTuoitre().execute(listTheLoai.get(i).getLinkTheloai());
+                    }
                 }
             }
         });
@@ -323,6 +327,66 @@ public class fm_TrangChu extends Fragment {
                 Element element = (Element) nodeList.item(i);
                 title = parser.getValue(element, "title");
                 link = parser.getValue(element, "link");
+                TinTuc tinTuc = new TinTuc(title,link,hinhanh,"",hinhanh,nguonbao,"","");
+                list.add(tinTuc);
+
+            }
+            listView.setAdapter(adapter);
+            adapter = new TinTucAdapter(getActivity(),R.layout.item_list_tintucc,list);
+            super.onPostExecute(s);
+
+        }
+    }
+
+    class ReadDataTuoitre extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return docNoiDung_Tu_URL(strings[0]);
+        }
+
+        // vn express
+        @Override
+        protected void onPostExecute(String s) {
+            XMLDOMParser parser = new XMLDOMParser();
+            Document document = parser.getDocument(s);
+            NodeList nodeList = document.getElementsByTagName("item");
+            NodeList nodeList1Desciption = document.getElementsByTagName("description");
+            NodeList nodeListTitle = document.getElementsByTagName("title");
+            NodeList nodeListLink = document.getElementsByTagName("link");
+            String title = "";
+            String link = "";
+            String hinhanh = "";
+            String nguonbao ="Tuổi Trẻ";
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                String cdata = nodeList1Desciption.item(i).getTextContent();
+                int flag =0;
+//                Element line = (Element) nodeList1Desciption.item(i+1);
+//                String cdata = getCharacterDataFromElement(line);
+                Pattern p = Pattern.compile("<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>");
+                Pattern p1 = Pattern.compile("<img[^>]+data-original\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>");
+                Matcher matcher = p.matcher(cdata);
+                Matcher matcher1 = p1.matcher(cdata);
+
+                //Matcher matcher = Pattern.compile("<img src=\"([^\"]+)").matcher(getCharacterDataFromElement(line));
+
+                if (matcher1.find())
+                {
+                    hinhanh = matcher1.group(1);
+                    flag=1;
+
+                }
+                if  (matcher.find()&& flag==0)
+                {
+
+                    hinhanh = matcher.group(1);
+                    //Log.d("hinhanh",hinhanh + ".........." +i);
+                }
+
+                Element element = (Element) nodeList.item(i);
+                title = nodeListTitle.item(i+1).getTextContent();
+                link = nodeListLink.item(i+1).getTextContent();
+                //Toast.makeText(MainActivity.this, title, Toast.LENGTH_SHORT).show();
                 TinTuc tinTuc = new TinTuc(title,link,hinhanh,"",hinhanh,nguonbao,"","");
                 list.add(tinTuc);
 

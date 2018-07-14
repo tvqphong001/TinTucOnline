@@ -30,27 +30,9 @@ public class TinActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_Save:
-                    if(AccessToken.getCurrentAccessToken()!=null)
-                    {
-                        final LichSuDoc lichSuDoc = new LichSuDoc(ID_USER,webView.getUrl().toString(),"",webView.getTitle().toString(),"");
-                        //kiemtraTin(lichSuDoc);
 
-                        // Luu tin
-                        MainActivity.mDatabase.child("TinDaLuu").child(ID_USER).push().setValue(lichSuDoc);
-
-//                        if (kiemtraTin(lichSuDoc))
-//                        {
-//                            Toast.makeText(TinActivity.this, "Tin Đã Lưu Từ Trước!!!", Toast.LENGTH_SHORT).show();
-//                        }
-//                        else {
-//                            MainActivity.mDatabase.child("TinDaLuu").child(ID_USER).push().setValue(lichSuDoc);
-//                            Toast.makeText(TinActivity.this, "Tin Đã Lưu!!!", Toast.LENGTH_SHORT).show();
-//                        }
-
-                    }
-                    else {
-                        Toast.makeText(TinActivity.this, "Bạn Chưa Đăng Nhập!!!", Toast.LENGTH_SHORT).show();
-                    }
+                    LichSuDoc lichSuDoc = new LichSuDoc(ID_USER,webView.getUrl().toString(),"",webView.getTitle().toString(),"");
+                    MainActivity.mDatabase.child("TinDaLuu").push().setValue(lichSuDoc);
                     return true;
                 case R.id.navigation_Comments:
                     Toast.makeText(TinActivity.this, "Comments", Toast.LENGTH_SHORT).show();
