@@ -26,7 +26,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.TinActivity" />
-        <activity android:name=".activity.ChonChuyenMucActivity"></activity>
+        <activity android:name=".activity.ChonChuyenMucActivity" />
+        <activity android:name=".activity.LichSuDocActivity"></activity>
     </application>
 
 </manifest>

@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity
     LoginButton btnLoginButton;
     ImageView imvUser;
     TextView txtUser;
-    public static int ID_USER=0;
+    public static String ID_USER="";
     CallbackManager callbackManager= CallbackManager.Factory.create();
     ArrayList<TheLoai>  listTheLoai;
     public static ArrayList<ChuyenMuc> listChuyenMuc;
@@ -134,8 +134,9 @@ public class MainActivity extends AppCompatActivity
                         String profilePicUrl = "https://graph.facebook.com/" + id + "/picture?type=large";
                         Picasso.get().load(profilePicUrl).into(imvUser);
                         txtUser.setText(name);
+                        ID_USER = id;
                         //ID_USER = Integer.parseInt(id);
-                        user = new User(id,name,email);
+                        //user = new User(id,name,email);
                         //mDatabase.child("User").push().setValue(user);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -157,16 +158,17 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         Log.d("Json",response.getJSONObject().toString());
-                        User user = null;
+                        //User user = null;
                         try {
                             String name = object.getString("name");
                             String id = object.getString("id");
-                            String email = object.getString("email");
+                            //String email = object.getString("email");
                             String profilePicUrl = "https://graph.facebook.com/" + id + "/picture?type=large";
                             Picasso.get().load(profilePicUrl).into(imvUser);
                             txtUser.setText(name);
+                            ID_USER = id;
                             //ID_USER = Integer.parseInt(id);
-                            user = new User(id,name,email);
+                            //user = new User(id,name,email);
                             //mDatabase.child("User").push().setValue(user);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -356,7 +358,7 @@ public class MainActivity extends AppCompatActivity
            // startActivity(new Intent(MainActivity2.this, SettingsActivity2.class));
         }
         if (id == R.id.nav_history_new_save) {
-           // startActivity(new Intent(MainActivity2.this, HistoryRead_Activity.class));
+            startActivity(new Intent(MainActivity.this, LichSuDocActivity.class));
         }
         if (id == R.id.nav_logout) {
             LoginManager.getInstance().logOut();

@@ -73,6 +73,7 @@ public class fm_SucKhoe extends Fragment {
                 Intent intent = new Intent(getActivity(), TinActivity.class);
                 // lấy đối tượng TinTuc trong list ngay position(Vị Trí) mà mình nhấn vào
                 intent.putExtra("link",list.get(position).getLink());
+                intent.putExtra("ID_USER",MainActivity.ID_USER);
                 startActivity(intent);
             }
         });
