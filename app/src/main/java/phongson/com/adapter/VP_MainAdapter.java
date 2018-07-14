@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import phongson.com.activity.MainActivity;
 import phongson.com.fragment.fm_CongNghe;
 import phongson.com.fragment.fm_GiaiTri;
 import phongson.com.fragment.fm_GiaoDuc;
@@ -39,35 +40,61 @@ public class VP_MainAdapter extends FragmentPagerAdapter {
         switch (position)
         {
             case 0:
-                return new fm_TrangChu();
+                    return new fm_TrangChu();
             case 1:
-                return new fm_ThoiSu();
+                return khoitaoFragment(position);
+
             case 2:
-                return new fm_GiaiTri();
+                return khoitaoFragment(position);
+
             case 3:
-                return new fm_GiaoDuc();
+                return khoitaoFragment(position);
+
             case 4:
-                return new fm_TheThao();
+                return khoitaoFragment(position);
+
             case 5:
-                return new fm_SucKhoe();
+                return khoitaoFragment(position);
+
             case 6:
-                return new fm_CongNghe();
+                return khoitaoFragment(position);
+
             case 7:
-                return new fm_Video();
+                return khoitaoFragment(position);
+
+
             default:
                 return null;
 
         }
     }
 
+    private Fragment khoitaoFragment(int position)
+    {
+        if ("Thời Sự".equals(MainActivity.listChuyenMuc.get(position).getTenchuyenmuc()))
+            return new fm_ThoiSu();
+        if ("Giải Trí".equals(MainActivity.listChuyenMuc.get(position).getTenchuyenmuc()))
+            return new fm_GiaiTri();
+        if ("Giáo Dục".equals(MainActivity.listChuyenMuc.get(position).getTenchuyenmuc()))
+            return new fm_GiaoDuc();
+        if ("Sức Khỏe".equals(MainActivity.listChuyenMuc.get(position).getTenchuyenmuc()))
+            return new fm_SucKhoe();
+        if ("Công Nghệ".equals(MainActivity.listChuyenMuc.get(position).getTenchuyenmuc()))
+            return new fm_CongNghe();
+        if ("Video".equals(MainActivity.listChuyenMuc.get(position).getTenchuyenmuc()))
+            return new fm_Video();
+        if ("Thể Thao".equals(MainActivity.listChuyenMuc.get(position).getTenchuyenmuc()))
+            return new fm_TheThao();
+        return null;
+    }
     @Override
     public int getCount() {
-        return tab.size();
+        return MainActivity.listChuyenMuc.size();
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        return tab.get(position) ;
+        return MainActivity.listChuyenMuc.get(position).getTenchuyenmuc() ;
     }
 }

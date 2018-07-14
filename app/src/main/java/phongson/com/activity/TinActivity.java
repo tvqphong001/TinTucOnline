@@ -10,7 +10,10 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+
 import phongson.com.R;
+import phongson.com.model.LichSuDoc;
 
 public class TinActivity extends AppCompatActivity {
     WebView webView;
@@ -22,7 +25,14 @@ public class TinActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_Save:
-                    Toast.makeText(TinActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+                    if(AccessToken.getCurrentAccessToken()!=null)
+                    {
+                        LichSuDoc lichSuDoc = new LichSuDoc(String.valueOf(MainActivity.ID_USER),webView.getUrl().toString(),"",webView.getTitle().toString(),"");
+                        MainActivity.mDatabase.child("TinDaLuu").push().setValue(lichSuDoc);
+                    }
+                    else {
+                        Toast.makeText(TinActivity.this, "Bạn Chưa Đăng Nhập!!!", Toast.LENGTH_SHORT).show();
+                    }
                     return true;
                 case R.id.navigation_Comments:
                     Toast.makeText(TinActivity.this, "Comments", Toast.LENGTH_SHORT).show();

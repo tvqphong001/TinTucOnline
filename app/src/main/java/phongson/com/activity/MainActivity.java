@@ -1,5 +1,6 @@
 package phongson.com.activity;
 
+import android.annotation.SuppressLint;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -21,24 +22,48 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import phongson.com.R;
 import phongson.com.adapter.VP_MainAdapter;
+import phongson.com.model.ChuyenMuc;
 import phongson.com.model.TheLoai;
+import phongson.com.model.User;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     TabLayout tabLayout;
     ViewPager viewPager;
+    LoginButton btnLoginButton;
+    ImageView imvUser;
+    TextView txtUser;
+    public static int ID_USER=0;
+    CallbackManager callbackManager= CallbackManager.Factory.create();
     ArrayList<TheLoai>  listTheLoai;
+    public static ArrayList<ChuyenMuc> listChuyenMuc;
     public static DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,16 +88,6 @@ public class MainActivity extends AppCompatActivity
 //        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -81,10 +96,121 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View hview = navigationView.getHeaderView(0);
+        setDataUser(hview);
+
+        Intent intent = getIntent();
+        int Thaydoi = intent.getIntExtra("ThayDoi",-1);
+        if (Thaydoi==1)
+        {
+            listChuyenMuc = ChonChuyenMucActivity.listChonChuyenMuc;
+        }
+        else {
+            setTabChuyeMuc();
+        }
         setViewPager();
        //setDataTheLoai();
 
+
+
     }
+
+    private void setDataUser(View hview) {
+        btnLoginButton = hview.findViewById(R.id.btnLoginFb);
+        imvUser = hview.findViewById(R.id.imvUser);
+        txtUser = hview.findViewById(R.id.txtUser);
+        if (AccessToken.getCurrentAccessToken()!=null)
+        {
+            GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                @Override
+                public void onCompleted(JSONObject object, GraphResponse response) {
+                    Log.d("Json",response.getJSONObject().toString());
+                    User user = null;
+                    try {
+                        String name = object.getString("name");
+                        String id = object.getString("id");
+                        String email = object.getString("email");
+                        String profilePicUrl = "https://graph.facebook.com/" + id + "/picture?type=large";
+                        Picasso.get().load(profilePicUrl).into(imvUser);
+                        txtUser.setText(name);
+                        //ID_USER = Integer.parseInt(id);
+                        user = new User(id,name,email);
+                        //mDatabase.child("User").push().setValue(user);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            Bundle parameters = new Bundle();
+            parameters.putString("fields", "name,id,email");
+            request.setParameters(parameters);
+            request.executeAsync();
+            btnLoginButton.setVisibility(View.INVISIBLE);
+        }
+        btnLoginButton.setReadPermissions(Arrays.asList("public_profile","email","user_birthday"));
+        btnLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        Log.d("Json",response.getJSONObject().toString());
+                        User user = null;
+                        try {
+                            String name = object.getString("name");
+                            String id = object.getString("id");
+                            String email = object.getString("email");
+                            String profilePicUrl = "https://graph.facebook.com/" + id + "/picture?type=large";
+                            Picasso.get().load(profilePicUrl).into(imvUser);
+                            txtUser.setText(name);
+                            //ID_USER = Integer.parseInt(id);
+                            user = new User(id,name,email);
+                            //mDatabase.child("User").push().setValue(user);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "name,id,email");
+                request.setParameters(parameters);
+                request.executeAsync();
+                btnLoginButton.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
+
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+    private void setTabChuyeMuc() {
+        ChuyenMuc chuyenMuc = new ChuyenMuc("1","Trang Chủ",1);
+        ChuyenMuc chuyenMuc1 = new ChuyenMuc("2","Thời Sự",1);
+        ChuyenMuc chuyenMuc2 = new ChuyenMuc("3","Giải Trí",1);
+        ChuyenMuc chuyenMuc3 = new ChuyenMuc("4","Giáo Dục",1);
+        ChuyenMuc chuyenMuc4 = new ChuyenMuc("5","Thể Thao",1);
+        ChuyenMuc chuyenMuc5 = new ChuyenMuc("6","Sức Khỏe",1);
+        ChuyenMuc chuyenMuc6 = new ChuyenMuc("7","Công Nghệ",1);
+        ChuyenMuc chuyenMuc7 = new ChuyenMuc("8","Video",1);
+        listChuyenMuc = new ArrayList<>();
+        listChuyenMuc.addAll(Arrays.asList(chuyenMuc,chuyenMuc1,chuyenMuc2,chuyenMuc3,chuyenMuc4,chuyenMuc5,chuyenMuc6,chuyenMuc7));
+    }
+
     private void setViewPager() {
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
@@ -224,7 +350,7 @@ public class MainActivity extends AppCompatActivity
             //startActivity(new Intent(MainActivity2.this, ThongTinCaNhanActivity.class));
         }
         if (id == R.id.nav_chonchuyenmuc) {
-          //  startActivity(new Intent(MainActivity.this, ChonChuyenMuc.class));
+            startActivity(new Intent(MainActivity.this, ChonChuyenMucActivity.class));
         }
         if (id == R.id.nav_setting) {
            // startActivity(new Intent(MainActivity2.this, SettingsActivity2.class));
@@ -233,6 +359,10 @@ public class MainActivity extends AppCompatActivity
            // startActivity(new Intent(MainActivity2.this, HistoryRead_Activity.class));
         }
         if (id == R.id.nav_logout) {
+            LoginManager.getInstance().logOut();
+            btnLoginButton.setVisibility(View.VISIBLE);
+            imvUser.setImageResource(R.drawable.guest);
+            txtUser.setText("Khách");
             // đăng xuất fb
         }
 
