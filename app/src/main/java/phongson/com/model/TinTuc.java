@@ -2,6 +2,27 @@ package phongson.com.model;
 
 public class TinTuc {
     String tieude,link,idTheloai,ngaydang,link_hinh,ngonbao,luotxen,luotbinhluan;
+    int id;
+
+    public TinTuc(String tieude, String link, String idTheloai, String ngaydang, String link_hinh, String ngonbao, String luotxen, String luotbinhluan, int id) {
+        this.tieude = tieude;
+        this.link = link;
+        this.idTheloai = idTheloai;
+        this.ngaydang = ngaydang;
+        this.link_hinh = link_hinh;
+        this.ngonbao = ngonbao;
+        this.luotxen = luotxen;
+        this.luotbinhluan = luotbinhluan;
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public TinTuc(String tieude, String link, String idTheloai, String ngaydang, String link_hinh, String ngonbao, String luotxen, String luotbinhluan) {
         this.tieude = tieude;

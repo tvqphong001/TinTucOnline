@@ -1,14 +1,11 @@
 package phongson.com.activity;
 
-import android.annotation.SuppressLint;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.util.Base64;
@@ -60,9 +57,9 @@ public class MainActivity extends AppCompatActivity
     LoginButton btnLoginButton;
     ImageView imvUser;
     TextView txtUser;
-    public static String ID_USER="";
-    CallbackManager callbackManager= CallbackManager.Factory.create();
-    ArrayList<TheLoai>  listTheLoai;
+    public static String ID_USER = "";
+    CallbackManager callbackManager = CallbackManager.Factory.create();
+    ArrayList<TheLoai> listTheLoai;
     public static ArrayList<ChuyenMuc> listChuyenMuc;
     public static DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     @Override
@@ -70,25 +67,22 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //        try {
-//            PackageInfo info = null;
-//            try {
-//                info = getPackageManager().getPackageInfo(
-//                        "phongson.com.activity",
-//                        PackageManager.GET_SIGNATURES);
-//            } catch (PackageManager.NameNotFoundException e) {
-//                e.printStackTrace();
-//            }
+//            PackageInfo info = getPackageManager().getPackageInfo(
+//                    "phongson.com.activity ",
+//                    PackageManager.GET_SIGNATURES);
 //            for (Signature signature : info.signatures) {
 //                MessageDigest md = MessageDigest.getInstance("SHA");
 //                md.update(signature.toByteArray());
 //                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
 //            }
-//        }catch (NoSuchAlgorithmException e) {
+//        } catch (PackageManager.NameNotFoundException e) {
+//
+//        } catch (NoSuchAlgorithmException e) {
 //
 //        }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -101,17 +95,14 @@ public class MainActivity extends AppCompatActivity
         setDataUser(hview);
 
         Intent intent = getIntent();
-        int Thaydoi = intent.getIntExtra("ThayDoi",-1);
-        if (Thaydoi==1)
-        {
+        int Thaydoi = intent.getIntExtra("ThayDoi", -1);
+        if (Thaydoi == 1) {
             listChuyenMuc = ChonChuyenMucActivity.listChonChuyenMuc;
-        }
-        else {
+        } else {
             setTabChuyeMuc();
         }
         setViewPager();
-       //setDataTheLoai();
-
+        //setDataTheLoai();
 
 
     }
@@ -120,12 +111,11 @@ public class MainActivity extends AppCompatActivity
         btnLoginButton = hview.findViewById(R.id.btnLoginFb);
         imvUser = hview.findViewById(R.id.imvUser);
         txtUser = hview.findViewById(R.id.txtUser);
-        if (AccessToken.getCurrentAccessToken()!=null)
-        {
+        if (AccessToken.getCurrentAccessToken() != null) {
             GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                 @Override
                 public void onCompleted(JSONObject object, GraphResponse response) {
-                    Log.d("Json",response.getJSONObject().toString());
+                    //Log.d("Json", response.getJSONObject().toString());
                     User user = null;
                     try {
                         String name = object.getString("name");
@@ -150,14 +140,14 @@ public class MainActivity extends AppCompatActivity
             request.executeAsync();
             btnLoginButton.setVisibility(View.INVISIBLE);
         }
-        btnLoginButton.setReadPermissions(Arrays.asList("public_profile","email","user_birthday"));
+        btnLoginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_birthday"));
         btnLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
-                        Log.d("Json",response.getJSONObject().toString());
+                        //Log.d("Json", response.getJSONObject().toString());
                         //User user = null;
                         try {
                             String name = object.getString("name");
@@ -195,22 +185,24 @@ public class MainActivity extends AppCompatActivity
         });
 
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
     }
+
     private void setTabChuyeMuc() {
-        ChuyenMuc chuyenMuc = new ChuyenMuc("1","Trang Chủ",1);
-        ChuyenMuc chuyenMuc1 = new ChuyenMuc("2","Thời Sự",1);
-        ChuyenMuc chuyenMuc2 = new ChuyenMuc("3","Giải Trí",1);
-        ChuyenMuc chuyenMuc3 = new ChuyenMuc("4","Giáo Dục",1);
-        ChuyenMuc chuyenMuc4 = new ChuyenMuc("5","Thể Thao",1);
-        ChuyenMuc chuyenMuc5 = new ChuyenMuc("6","Sức Khỏe",1);
-        ChuyenMuc chuyenMuc6 = new ChuyenMuc("7","Công Nghệ",1);
-        ChuyenMuc chuyenMuc7 = new ChuyenMuc("8","Video",1);
+        ChuyenMuc chuyenMuc = new ChuyenMuc("1", "Trang Chủ", 1);
+        ChuyenMuc chuyenMuc1 = new ChuyenMuc("2", "Thời Sự", 1);
+        ChuyenMuc chuyenMuc2 = new ChuyenMuc("3", "Giải Trí", 1);
+        ChuyenMuc chuyenMuc3 = new ChuyenMuc("4", "Giáo Dục", 1);
+        ChuyenMuc chuyenMuc4 = new ChuyenMuc("5", "Thể Thao", 1);
+        ChuyenMuc chuyenMuc5 = new ChuyenMuc("6", "Sức Khỏe", 1);
+        ChuyenMuc chuyenMuc6 = new ChuyenMuc("7", "Công Nghệ", 1);
+        ChuyenMuc chuyenMuc7 = new ChuyenMuc("8", "Video", 1);
         listChuyenMuc = new ArrayList<>();
-        listChuyenMuc.addAll(Arrays.asList(chuyenMuc,chuyenMuc1,chuyenMuc2,chuyenMuc3,chuyenMuc4,chuyenMuc5,chuyenMuc6,chuyenMuc7));
+        listChuyenMuc.addAll(Arrays.asList(chuyenMuc, chuyenMuc1, chuyenMuc2, chuyenMuc3, chuyenMuc4, chuyenMuc5, chuyenMuc6, chuyenMuc7));
     }
 
     private void setViewPager() {
@@ -238,6 +230,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
     private void setDataTheLoai() {
 
         listTheLoai = new ArrayList<>();
@@ -296,12 +289,12 @@ public class MainActivity extends AppCompatActivity
         listTheLoai.add(theLoai21);
         listTheLoai.add(theLoai22);
 
-        for(int i=0;i<listTheLoai.size();i++)
-        {
+        for (int i = 0; i < listTheLoai.size(); i++) {
             mDatabase.child("TheLoai").push().setValue(listTheLoai.get(i));
         }
 
     }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -341,7 +334,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         FragmentManager fragmentManager = getFragmentManager();
         if (id == R.id.nav_Home) {
-           setViewPager();
+            setViewPager();
         }
         if (id == R.id.nav_thongtincanhan) {
 //            fragmentManager.beginTransaction()
@@ -355,7 +348,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(MainActivity.this, ChonChuyenMucActivity.class));
         }
         if (id == R.id.nav_setting) {
-           // startActivity(new Intent(MainActivity2.this, SettingsActivity2.class));
+            // startActivity(new Intent(MainActivity2.this, SettingsActivity2.class));
         }
         if (id == R.id.nav_history_new_save) {
             startActivity(new Intent(MainActivity.this, LichSuDocActivity.class));
@@ -369,7 +362,7 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

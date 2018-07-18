@@ -259,11 +259,6 @@ public class fm_TrangChu extends Fragment {
                 Matcher matcher1 = p1.matcher(cdata);
                 //Matcher matcher = Pattern.compile("<img src=\"([^\"]+)").matcher(getCharacterDataFromElement(line));
 
-                if (matcher1.find()) {
-                    hinhanh = matcher1.group(1);
-                    flag = 1;
-
-                }
                 if (matcher.find() && flag == 0) {
 
                     hinhanh = matcher.group(1);
@@ -338,6 +333,15 @@ public class fm_TrangChu extends Fragment {
         }
     }
 
+    class  readataaa extends AsyncTask<String,Integer,String>
+    {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
+
+    }
     class ReadDataTuoitre extends AsyncTask<String, Integer, String> {
 
         @Override

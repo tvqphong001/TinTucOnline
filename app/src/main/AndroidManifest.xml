@@ -27,7 +27,14 @@
         </activity>
         <activity android:name=".activity.TinActivity" />
         <activity android:name=".activity.ChonChuyenMucActivity" />
-        <activity android:name=".activity.LichSuDocActivity"></activity>
+        <activity android:name=".activity.LichSuDocActivity" />
+
+        <provider
+            android:name="com.facebook.FacebookContentProvider"
+            android:authorities="com.facebook.app.FacebookContentProvider{@string/facebook_app_id}"
+            android:exported="true" />
+
+        <activity android:name=".activity.BinhLuanActivity"></activity>
     </application>
 
 </manifest>

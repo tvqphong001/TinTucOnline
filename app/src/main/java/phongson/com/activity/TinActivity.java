@@ -1,6 +1,7 @@
 package phongson.com.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,19 +11,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareButton;
+import com.facebook.share.widget.ShareDialog;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
 import phongson.com.R;
+import phongson.com.model.BinhLuan;
 import phongson.com.model.LichSuDoc;
 
 public class TinActivity extends AppCompatActivity {
     WebView webView;
-    String ID_USER;
+    public static String ID_USER;
+    CallbackManager callbackManager;
+    ShareDialog shareDialog;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -35,10 +47,12 @@ public class TinActivity extends AppCompatActivity {
                     MainActivity.mDatabase.child("TinDaLuu").push().setValue(lichSuDoc);
                     return true;
                 case R.id.navigation_Comments:
-                    Toast.makeText(TinActivity.this, "Comments", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(TinActivity.this, BinhLuanActivity.class);
+                    intent.putExtra("linkTinTuc",webView.getUrl());
+                    startActivity(intent);
                     return true;
                 case R.id.navigation_Share:
-                    Toast.makeText(TinActivity.this, "Shared", Toast.LENGTH_SHORT).show();
+                    shareFaceBook();
                     return true;
             }
             return false;
@@ -87,12 +101,6 @@ public class TinActivity extends AppCompatActivity {
         Intent intent1 = getIntent();
         ID_USER=intent1.getStringExtra("ID_USER");
 
-//        if (AccessToken.getCurrentAccessToken()!=null)
-//        {
-//            LichSuDoc lichSuDoc = new LichSuDoc(ID_USER,webView.getUrl().toString(),"",webView.getTitle().toString(),"");
-//            MainActivity.mDatabase.child("TinDaXem").child(ID_USER).push().setValue(lichSuDoc);
-//        }
-
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
             actionBar.setTitle(getResources().getString(R.string.app_name));
@@ -112,6 +120,44 @@ public class TinActivity extends AppCompatActivity {
         webView.loadUrl(link);
     }
 
+    private void shareFaceBook() {
+        ShareLinkContent content = new ShareLinkContent.Builder()
+                .setContentUrl(Uri.parse(webView.getUrl()))
+                .build();
+
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
+        ShareDialog.show(this, content);
+
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+            ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                    .setContentUrl(Uri.parse(webView.getUrl()))
+                    .build();
+            shareDialog.show(linkContent);
+        }
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                Toast.makeText(TinActivity.this, "Chia Sẽ Thành Công", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(TinActivity.this, "Chia Sẽ Đã Thoát", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Toast.makeText(TinActivity.this, "Lỗi Chia Sẽ", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
     private void settingWebView(boolean trangthai) {
         webView.getSettings().setJavaScriptEnabled(trangthai);
         // webView.getSettings().setPluginState(WebSettings.PluginState.ON);
